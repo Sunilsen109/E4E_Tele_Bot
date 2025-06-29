@@ -1,6 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
-import  json, io, requests
+import  json, io, requests, os
+TOKEN = os.getenv("BOT_TOKEN")
 
 # job_list = [
 #     "🧑‍💻 Software Engineer - TCS, Mumbai\nApply: https://www.tcs.com/careers",
@@ -50,7 +51,7 @@ async def new_jobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Main function to start the bot
 if __name__ == '__main__':
-    app = ApplicationBuilder().token("8016544236:AAHR2kFJGQqj6qJzwelmoA-T1gmawWwMWEA").build()
+    app = ApplicationBuilder().token("TOKEN").build()
 
     fetch_jobs()  # Fetch jobs at startup
     app.add_handler(CommandHandler("start", start))
