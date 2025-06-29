@@ -1,13 +1,11 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 import  json, io, requests, os
+from dotenv import load_dotenv
+
+load_dotenv()  # loads .env file
 TOKEN = os.getenv("BOT_TOKEN")
 
-# job_list = [
-#     "🧑‍💻 Software Engineer - TCS, Mumbai\nApply: https://www.tcs.com/careers",
-#     "📱 Android Developer - Infosys, Bangalore\nApply: https://www.infosys.com/careers",
-#     "🕸️ Web Developer - Wipro, Pune\nApply: https://www.wipro.com/careers"
-# ] title location link com
 # # Define a simple /start command
 job_list = []  # Initialize an empty list to store job listings
 def fetch_jobs(limit: int = 10) -> list[dict]:
@@ -51,7 +49,8 @@ async def new_jobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Main function to start the bot
 if __name__ == '__main__':
-    app = ApplicationBuilder().token("TOKEN").build()
+    #TOKEN = os.getenv("BOT_TOKEN")
+    app = ApplicationBuilder().token(TOKEN).build()
 
     fetch_jobs()  # Fetch jobs at startup
     app.add_handler(CommandHandler("start", start))
