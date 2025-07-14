@@ -1,7 +1,8 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters , CallbackContext
 import  json, io, requests, os
 from dotenv import load_dotenv
+from web_scrapping import get_latest_sarkari_jobs
 
 load_dotenv()  # loads .env file
 TOKEN = os.getenv("BOT_TOKEN")
@@ -23,7 +24,7 @@ def fetch_jobs(limit: int = 10) -> list[dict]:
     
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hello! I am your bot. My Owner is @sunil_sen sir and I am here to assist you.\n\n Type **new jobs** to get the latest job openings.")
+    await update.message.reply_text("Hello! I am your bot. My Owner is @sunil_sen sir and I am here to assist you.\n\n Type **new jobs**  or **sarkari result**to get the latest job openings.")
 
 async def new_jobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     jobs = fetch_jobs(10)
@@ -47,6 +48,15 @@ async def new_jobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Type 'new jobs' to get job listings.")
 
+def handle_message(update: Update, context: CallbackContext) -> None:
+    user_message = update.message.text.lower()
+    if "sarkari result" in user_message:
+        update.message.reply_text("Fetching Sarkari Results... please wait.")
+        jobs = get_latest_sarkari_jobs()
+        update.message.reply_text(jobs)
+    else:
+        update.message.reply_text("Type 'sarkari result' to get the latest jobs.")
+
 # Main function to start the bot
 if __name__ == '__main__':
     #TOKEN = os.getenv("BOT_TOKEN")
@@ -55,6 +65,8 @@ if __name__ == '__main__':
     fetch_jobs()  # Fetch jobs at startup
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, new_jobs))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     print("Bot is running...")
     app.run_polling()
+    app.idle()
